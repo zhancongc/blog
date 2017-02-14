@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 {% import 'bootstrap/wtf.html' as wtf %}
 {% block page_content %}
-    <h1>Sign In</h1>
-    {{ wtf.quick_form(form) }}
+    <div class="panel panel-default">
+        <div class="panel-heading"><h4>Login</h4></div>
+        <div class="panel-body">{{ wtf.quick_form(form) }}{{ form.csrf_token }}</div>
+    </div>
 {% endblock %}

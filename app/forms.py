@@ -11,8 +11,8 @@ class LoginForm(FlaskForm):
 
 
 class RegisterForm(FlaskForm):
-    nickname = StringField(u'昵称', validators=[DataRequired])
-    email = StringField(u'邮箱', validators=[DataRequired, Email()])
-    password = PasswordField(u'密码', validators=[DataRequired, Length(6, 12, message=u'密码长度在6到12为')])
-    password1 = PasswordField(u'确认密码', validators=[DataRequired, Length(6, 12, message=u'密码长度在6到12为'),EqualTo('password', message=u'密码必须一致')])
-    submit = SubmitField(u'注册')
+    nickname = StringField('nickname', validators=[DataRequired])
+    email = StringField('email', validators=[DataRequired, Email()])
+    password = PasswordField('password', validators=[DataRequired, Length(6, 12, message=u'密码长度在6到12位')])
+    confirm = PasswordField('confirm', validators=[DataRequired, Length(6, 12, message=u'密码长度在6到12位'), EqualTo('password', message=u'密码必须一致')])
+    submit = SubmitField('register')

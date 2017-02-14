@@ -1,3 +1,15 @@
 {% extends 'base.html' %}
 {% block page_content %}
+    <div class="panel panel-default">
+        <div class="panel-heading"><h4>Welcome</h4></div>
+        <div class="panel-body">
+            <div class="panel panel-default">
+                <a href="{{ url_for('login') }}"><div class="panel-body"><h5>Login</h5></div></a>
+            </div>
+            <div class="panel panel-default">
+                <a href="{{ url_for('register') }}"><div class="panel-body"><h5>Register</h5></div></a>
+            </div>
+        </div>
+        <div class="panel-footer"></div>
+    </div>
 {% endblock %}
