@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block page_content %}
+    <div class="panel panel-default">
+        <div class="panel-heading"><h4>{{ title }}</h4></div>
+        <div class="panel-body">
+            <div class="panel-body"><h2>{{ user.nickname }}</h2><br>{{ user.email }}</div>
+        </div>
+    </div>
+{% endblock %}
