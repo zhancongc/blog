@@ -8,14 +8,14 @@ from app.models import User
 
 @app.before_request
 def before_requset():
-    if current_user.is_authenticated and not current_user.confirmed \
+    if current_user.is_authenticated and not current_user.confirm \
             and request.endpoint[:5] != 'auth.' and request.endpoint != 'static':
         return redirect(url_for('unconfirmed'))
 
 
 @app.route('/unconfirmed')
 def unconfirmed():
-    if current_user.is_anonymous or current_user.confirmed:
+    if current_user.is_anonymous or current_user.confirm:
         return redirect(url_for('index'))
     return render_template('auth/unconfirmed.html')
 
@@ -84,7 +84,7 @@ def login():
                 flash('Password is incorrect. Please check and modify it.')
         else:
             flash(form.nickname.data+' is not existed.')
-    return render_template('auth/login.html', title='Sign In', form=form)
+    return render_template('login.html', title='Sign In', form=form)
 
 
 @app.route('/logout')
@@ -113,10 +113,10 @@ def user(nickname):
     if user is None:
         abort(404)
     else:
-        return render_template('user.html', title='Welcome', user=user)
+        return render_template('main/user.html', title='Welcome', user=user)
 
 
 @app.route('/', methods=['GET'])
 @login_required
 def index():
-    return redirect(url_for('user'))
+    return redirect('/user/' + current_user.nickname)
