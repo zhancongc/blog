@@ -23,11 +23,14 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a href="{{ url_for('index') }}">Home</a></li>
-                    <li><a href="{{ url_for('about') }}">About</a></li>
+                    <li><a href="{{ url_for('new_article') }}">Write</a></li>
+                    <li><a href="{{ url_for('user_article') }}">Articles</a></li>
+                    <li><a href="{{ url_for('about') }}">Help</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     {% if current_user.is_authenticated %}
+                        <li><a href="{{ url_for('user', nickname=current_user.nickname) }}">
+                            {{ current_user.nickname }}</a></li>
                         <li><a href="{{ url_for('logout') }}">Sign Out</a></li>
                     {% else %}
                         <li><a href="{{ url_for('login') }}">Sign In</a></li>
@@ -38,20 +41,20 @@
     </div>
 {% endblock %}
 
-<div class="container">
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <ul class="glyphicon-flash">
-                {% for message in messages %}
-                    <li>{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %}
-</div>
-
 {% block content %}
     <div class="container">
+        {% for message in get_flashed_messages() %}
+            <div class="alert alert-warning">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                {{ message }}
+            </div>
+        {% endfor %}
         {% block page_content %}{% endblock %}
     </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    {{ moment.include_moment() }}
+    {{ pagedown.include_pagedown() }}
 {% endblock %}

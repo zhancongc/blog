@@ -1,0 +1,28 @@
+{% if articles %}
+    {% for article in articles %}
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4><a href="{{ url_for('article', id=article.author.id) }}">{{ article.title }}</a></h4>
+                <a href="{{ url_for('user', nickname=article.author.nickname) }}">
+                    {{ article.author.nickname }}</a>
+                {{ moment(article.timestamp).fromNow() }}
+            </div>
+            <div class="panel-body">
+                {% if article.body_html %}
+                    {{ article.body_html | safe }}
+                {% else %}
+                    {{ article.body }}
+                {% endif %}
+            </div>
+            <div class="panel-footer text-right">
+                {% if current_user.id == article.author_id %}
+                    <a href="{{ url_for('edit_article', id=article.id) }}">edit</a>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="text-left">
+        There is no article to be displayed.<a href="{{ url_for('new_article') }}">Write</a> now?
+    </div>
+{% endif %}

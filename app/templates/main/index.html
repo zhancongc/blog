@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
+{% import '_macros.html' as macros %}
+
 {% block page_content %}
     <div class="panel panel-default">
         <div class="panel-heading"><h4>{{ title }}</h4></div>
         <div class="panel-body">
-            Hello,
-            {% if current_user.is_authenticated() %}
-                {{ current_user.nickname }}
-            {% else %}
-                Stranger
-            {% endif %}!
+            {% include 'article/_articles.html' %}
+        </div>
+        <div>
+            {{ macros.pagination_widget(pagination, 'index') }}
         </div>
     </div>
 {% endblock %}

@@ -5,7 +5,10 @@
     <div class="panel panel-default">
         <div class="panel-heading"><h4>{{ title }}</h4></div>
         <div class="panel-body">
-            {{ wtf.quick_form(form) }}
+            {{ wtf.quick_form(form) }}{{ form.csrf_token }}
+        </div>
+        <div class="panel-footer text-right">
+            <a href="{{ url_for('user', nickname=current_user.nickname) }}">Back</a>
         </div>
     </div>
 {% endblock %}

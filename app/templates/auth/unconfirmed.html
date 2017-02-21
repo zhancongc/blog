@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block page_content %}
+    <div class="panel panel-default">
+        <div class="panel-heading"><h4>{{ title }}</h4></div>
+        <div class="panel-body">
+            A confirmation is required. Please click
+            <a href="{{ url_for('resend_email') }}">here</a>
+            to confirm your account.
+        </div>
+    </div>
+{% endblock %}

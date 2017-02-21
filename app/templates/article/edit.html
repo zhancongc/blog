@@ -1,12 +1,16 @@
 {% extends 'base.html' %}
+{% import 'bootstrap/wtf.html' as wtf %}
+
 {% block page_content %}
     <div class="panel panel-default">
         <div class="panel-heading"><h4>{{ title }}</h4></div>
         <div class="panel-body">
             <div class="panel-body">
-                Anything you would like to make an expression about could contact us via the email below.<br>
-                email: <a href="mailto:zhancongc@gmail.com">zhancongc@gmail.com</a>
+                {{ wtf.quick_form(form) }}
             </div>
+        </div>
+        <div class="panel-footer text-right">
+            <a href="{{ url_for('article', id=id) }}">back</a>
         </div>
     </div>
 {% endblock %}
