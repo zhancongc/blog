@@ -21,7 +21,8 @@ def index():
     pagination = Article.query.order_by(Article.timestamp.desc()).paginate(\
         page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'], error_out=False)
     articles = pagination.items
-    return render_template('main/index.html', title='Recent Articles', articles=articles, pagination=pagination)
+    return render_template('main/index.html', title='Recent Articles',\
+                           articles=articles, pagination=pagination, display=0)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -153,14 +154,14 @@ def profile_edit():
 @app.route('/article/<int:id>')
 def article(id):
     article = Article.query.get_or_404(id)
-    return render_template('article/article.html', title='Article', articles=[article])
+    return render_template('article/article.html', title='Article', articles=[article], display=1)
 
 
 @app.route('/articles/user')
 @login_required
 def user_article():
     articles = Article.query.filter_by(author_id=current_user.id).order_by(Article.timestamp.desc()).all()
-    return render_template('article/user_article.html', title='My Article', articles=articles)
+    return render_template('article/user_article.html', title='My Article', articles=articles, display=0)
 
 
 @app.route('/articles/new', methods=['GET', 'POST'])
@@ -172,7 +173,7 @@ def new_article():
         db.session.add(article)
         db.session.commit()
         return redirect(url_for('user', nickname=current_user.nickname))
-    return render_template('article/new.html', title='New Article', form=form)
+    return render_template('article/new.html', title='New Article', form=form, display=1)
 
 
 @app.route('/article/edit/<int:id>', methods=['GET', 'POST'])
@@ -190,5 +191,5 @@ def edit_article(id):
         return redirect(url_for('article', id=article.id))
     form.title.data = article.title
     form.body.data = article.body
-    return render_template('article/edit.html', title='Edit Article', form=form, id=article.id)
+    return render_template('article/edit.html', title='Edit Article', form=form, id=article.id, display=1)
 

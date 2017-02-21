@@ -7,6 +7,7 @@
                     {{ article.author.nickname }}</a>
                 {{ moment(article.timestamp).fromNow() }}
             </div>
+        {% if display %}
             <div class="panel-body">
                 {% if article.body_html %}
                     {{ article.body_html | safe }}
@@ -19,6 +20,7 @@
                     <a href="{{ url_for('edit_article', id=article.id) }}">edit</a>
                 {% endif %}
             </div>
+        {% endif %}
         </div>
     {% endfor %}
 {% else %}
