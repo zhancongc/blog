@@ -24,17 +24,17 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a href="{{ url_for('new_article') }}">Write</a></li>
-                    <li><a href="{{ url_for('user_article') }}">Articles</a></li>
-                    <li><a href="{{ url_for('about') }}">About Us</a></li>
+                    <li><a href="{{ url_for('new_article') }}">发文章</a></li>
+                    <li><a href="{{ url_for('user_article') }}">我的文章</a></li>
+                    <li><a href="{{ url_for('about') }}">关于本站</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     {% if current_user.is_authenticated %}
                         <li><a href="{{ url_for('user', nickname=current_user.nickname) }}">
                             {{ current_user.nickname }}</a></li>
-                        <li><a href="{{ url_for('logout') }}">Sign Out</a></li>
+                        <li><a href="{{ url_for('logout') }}">注销</a></li>
                     {% else %}
-                        <li><a href="{{ url_for('login') }}">Sign In</a></li>
+                        <li><a href="{{ url_for('login') }}">登陆</a></li>
                     {% endif %}
                 </ul>
             </div>
