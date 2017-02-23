@@ -1,0 +1,12 @@
+您好 {{ user.username }}:
+
+    欢迎你来到 Light Blog ！
+
+    为了继续您的注册，请点击下面的链接：
+    {{ url_for('register_confirm', token=token, _external=True) }}
+
+祝您在 Light Blog 中收获更多
+
+来自 Light Blog
+
+注意：验证邮件，勿回

@@ -1,3 +1,5 @@
+# coding = utf-8
+
 from datetime import datetime
 from app import db, login_manager
 from flask import current_app

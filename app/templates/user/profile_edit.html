@@ -8,7 +8,7 @@
             {{ wtf.quick_form(form) }}{{ form.csrf_token }}
         </div>
         <div class="panel-footer text-right">
-            <a href="{{ url_for('user', nickname=current_user.nickname) }}">Back</a>
+            <a href="{{ url_for('user', nickname=current_user.nickname) }}">返回</a>
         </div>
     </div>
 {% endblock %}

@@ -4,9 +4,8 @@
     <div class="panel panel-default">
         <div class="panel-heading"><h4>{{ title }}</h4></div>
         <div class="panel-body">
-            A confirmation is required. Please click
-            <a href="{{ url_for('resend_email') }}">here</a>
-            to confirm your account.
+            为了验证您的身份，请点击
+            <a href="{{ url_for('resend_email') }}">这里</a>。
         </div>
     </div>
 {% endblock %}
