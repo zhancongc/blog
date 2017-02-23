@@ -172,7 +172,7 @@ def new_article():
         article = Article(title=form.title.data, body=form.body.data, author_id=current_user.id)
         db.session.add(article)
         db.session.commit()
-        return redirect(url_for('user', nickname=current_user.nickname))
+        return redirect(url_for('user_article'))
     return render_template('article/new.html', title='New Article', form=form, display=1)
 
 

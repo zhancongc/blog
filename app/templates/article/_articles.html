@@ -2,7 +2,7 @@
     {% for article in articles %}
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h4><a href="{{ url_for('article', id=article.author.id) }}">{{ article.title }}</a></h4>
+                <h4><a href="{{ url_for('article', id=article.id) }}">{{ article.title }}</a></h4>
                 <a href="{{ url_for('user', nickname=article.author.nickname) }}">
                     {{ article.author.nickname }}</a>
                 {{ moment(article.timestamp).fromNow() }}

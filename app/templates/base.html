@@ -2,12 +2,13 @@
 
 {% block head %}
     {{ super() }}
-    <title>Pure Blog</title>
+    <title>Light Blog</title>
+    <meta name="baidu-site-verification" content="w8ueZGK8vQ" />
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-ico">
 {% endblock %}
 
-{% block title %}Pure Blog{% endblock %}
+{% block title %}Light Blog{% endblock %}
 
 {% block navbar %}
     <div class="navbar navbar-inverse" role="navigation">
@@ -19,7 +20,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="{{ url_for('index') }}">Pure Blog</a>
+                <a class="navbar-brand" href="{{ url_for('index') }}">Light Blog</a>
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
