@@ -34,8 +34,8 @@ class ResetPasswordForm(FlaskForm):
 
 
 class EditProfileForm(FlaskForm):
-    nickname = StringField('昵称', validators=[Length(0,64)])
-    city = StringField(u'城市', validators=[Length(0,64)])
+    nickname = StringField(u'昵称', validators=[Length(0, 64)])
+    city = StringField(u'城市', validators=[Length(0, 64)])
     about_me = TextAreaField(u'个性签名')
     submit = SubmitField(u'提交')
 

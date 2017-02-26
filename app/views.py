@@ -14,7 +14,7 @@ user = Blueprint('user', __name__, template_folder='templates/user')
 
 @auth.before_app_request
 def before_request():
-    if current_user.is_authenticated() and not current_user.confirmed \
+    if current_user.is_authenticated and not current_user.confirmed \
             and request.endpoint[:5] != 'auth.' and request.endpoint != 'static':
         return redirect(url_for('auth.unconfirmed'))
 
@@ -75,16 +75,15 @@ def register_confirm(token):
         flash(u'注册成功')
     else:
         flash(u'该链接非法或已经失效')
-    user = User.query.filter_by(email=current_user.email).first()
-    user.confirmed = True
+    current_user.confirmed = True
     db.session.commit()
-    return redirect(url_for('auth.login'))
+    return redirect(url_for('user.profile', nickname=current_user.nickname))
 
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user is not None and current_user.is_authenticated:
-        return redirect(url_for('user.profile'))
+        return redirect(url_for('user.profile', nickname=current_user.nickname))
     form = LoginForm()
     if form.validate_on_submit():
         username = User.query.filter_by(email=form.email.data).first()
@@ -138,6 +137,7 @@ def reset_password(token):
                 username.password = form.password.data
                 db.session.commit()
                 flash(u'新密码已生效')
+                return redirect(url_for('auth.login'))
         return render_template('auth.reset_password.html', title=u'密码重置', form=form)
     else:
         flash(u'该链接非法或已经失效')
