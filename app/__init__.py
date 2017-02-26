@@ -24,9 +24,13 @@ migrate = Migrate(app, db)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.session_protection = 'strong'
-login_manager.login_view = 'login'
+login_manager.login_view = '/auth/login'
 
 pagedown = PageDown(app)
 
-
 from app import models, views
+from app.views import auth, art, user
+
+app.register_blueprint(auth, url_prefix='/auth')
+app.register_blueprint(art, url_prefix='/article')
+app.register_blueprint(user, url_prefix='/user')

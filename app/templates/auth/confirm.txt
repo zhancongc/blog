@@ -3,7 +3,7 @@
     欢迎你来到 Light Blog ！
 
     为了继续您的注册，请点击下面的链接：
-    {{ url_for('register_confirm', token=token, _external=True) }}
+    {{ url_for('auth.register_confirm', token=token, _external=True) }}
 
 祝您在 Light Blog 中收获更多
 

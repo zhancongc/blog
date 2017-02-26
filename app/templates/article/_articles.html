@@ -2,8 +2,8 @@
     {% for article in articles %}
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h4><a href="{{ url_for('article', id=article.id) }}">{{ article.title }}</a></h4>
-                <a href="{{ url_for('user', nickname=article.author.nickname) }}">
+                <h4><a href="{{ url_for('art.article', id=article.id) }}">{{ article.title }}</a></h4>
+                <a href="{{ url_for('user.profile', nickname=article.author.nickname) }}">
                     {{ article.author.nickname }}</a>
                 {{ moment(article.timestamp).fromNow() }}
             </div>
@@ -17,7 +17,7 @@
             </div>
             <div class="panel-footer text-right">
                 {% if current_user.id == article.author_id %}
-                    <a href="{{ url_for('edit_article', id=article.id) }}">修改</a>
+                    <a href="{{ url_for('art.edit_article', id=article.id) }}">修改</a>
                 {% endif %}
             </div>
         {% endif %}
@@ -25,6 +25,6 @@
     {% endfor %}
 {% else %}
     <div class="text-left">
-        没有文章可以展示，不如<a href="{{ url_for('new_article') }}">发一篇</a>文章吧！
+        没有文章可以展示，不如<a href="{{ url_for('art.new_article') }}">发一篇</a>文章吧！
     </div>
 {% endif %}

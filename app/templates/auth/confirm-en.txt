@@ -3,7 +3,7 @@ Dear {{ user.username }}:
     Welcome to Pure Blog!
 
     To confirm your account please click on the following link:
-    {{ url_for('register_confirm', token=token, _external=True) }}
+    {{ url_for('auth.register_confirm', token=token, _external=True) }}
 
 Yours Sincerely
 

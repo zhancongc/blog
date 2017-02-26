@@ -28,9 +28,9 @@ MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD') or 'zaq1234567890okm'
 MAIL_USE_TLS = True
 MAIL_USE_SSL = False
 # the subject of mail
-FLASK_MAIL_SUBJECT_PREFIX = 'Pure Blog'
+FLASK_MAIL_SUBJECT_PREFIX = 'Light Blog'
 # whether to debug the mail, it is not suggested in product environment
 MAIL_DEBUG = True
 # articles displayed per page
-FLASKY_POSTS_PER_PAGE = 10
+FLASKY_ARTICLE_PER_PAGE = 10
 

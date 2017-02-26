@@ -6,8 +6,8 @@
         <div class="panel-heading"><h4>{{ title }}</h4></div>
         <div class="panel-body">{{ wtf.quick_form(form) }}{{ form.csrf_token }}</div>
         <div class="panel-footer text-right">
-            <a href="{{ url_for('forget_password') }}">忘记密码</a>&nbsp;&nbsp;
-            <a href="{{ url_for('register') }}">注册</a>
+            <a href="{{ url_for('auth.forget_password') }}">忘记密码</a>&nbsp;&nbsp;
+            <a href="{{ url_for('auth.register') }}">注册</a>
         </div>
     </div>
 {% endblock %}

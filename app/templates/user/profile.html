@@ -5,15 +5,26 @@
         <div class="panel-heading"><h4>{{ title }}</h4></div>
         <div class="panel-body">
             <h2>{{ user.nickname }}</h2><br>
-            {% for item in [user.city, user.email, user.about_me] %}
-                {% if item %}
-                    {{ item }}<br>
-                {% endif %}
-            {% endfor %}
+            <ul class="list-group">
+                <li class="list-group-item">城市：{% if user.city %}{{ user.city }}{% endif %}</li>
+                <li class="list-group-item">邮箱：{% if user.email %}{{ user.email }}{% endif %}</li>
+                <li class="list-group-item">个性签名：{% if user.about_me %}{{ user.about_me }}{% endif %}
+            </ul>
+            <ul class="list-group">
+                <li class="list-group-item">最新文章：</li>
+                {% for article in articles %}
+                    {% if article %}
+                        <li class="list-group-item">
+                            <a href="{{ url_for('art.article', id=article.id) }}">
+                                {{ article.title }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
         </div>
         <div class="panel-footer text-right">
             {% if user == current_user %}
-                <a href="{{ url_for('profile_edit') }}">修改</a>
+                <a href="{{ url_for('user.profile_edit') }}">修改</a>
             {% endif %}
         </div>
     </div>

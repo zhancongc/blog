@@ -1,33 +1,39 @@
 # coding = utf-8
 
-from flask import render_template, flash, redirect, url_for, request, abort, current_app
+from flask import render_template, flash, redirect, url_for, request, abort, current_app, Blueprint
 from flask_login import login_user, logout_user, login_required, current_user
-from app import app, db, mail
-from flask_mail import Message
-from app.forms import LoginForm, RegisterForm, ForgetPasswordForm, EditProfileForm, NewArticleFrom
+from app import app, db
+from app.forms import LoginForm, RegisterForm, ForgetPasswordForm, ResetPasswordForm, EditProfileForm, NewArticleFrom
 from app.models import User, Article
 from .email import send_email
-from random import randint
+
+auth = Blueprint('auth', __name__, template_folder='templates/auth')
+art = Blueprint('art', __name__, template_folder='templates/article')
+user = Blueprint('user', __name__, template_folder='templates/user')
 
 
-@app.before_request
-def before_requset():
-    if current_user.is_authenticated and not current_user.confirm \
+@auth.before_app_request
+def before_request():
+    if current_user.is_authenticated() and not current_user.confirmed \
             and request.endpoint[:5] != 'auth.' and request.endpoint != 'static':
-        return redirect(url_for('unconfirmed'))
+        return redirect(url_for('auth.unconfirmed'))
 
 
 @app.route('/')
 def index():
     page = request.args.get('page', 1, type=int)
-    pagination = Article.query.order_by(Article.timestamp.desc()).paginate(\
-        page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'], error_out=False)
+    pagination = Article.query.order_by(Article.timestamp.desc()).paginate(page, per_page=current_app.config[\
+        'FLASKY_ARTICLE_PER_PAGE'], error_out=False)
     articles = pagination.items
-    return render_template('main/index.html', title='最新文章',\
-                           articles=articles, pagination=pagination, display=0)
+    return render_template('index.html', title=u'最新文章', articles=articles, pagination=pagination, display=0)
 
 
-@app.route('/register', methods=['GET', 'POST'])
+@app.route('/about')
+def about():
+    return render_template('about.html', title=u'联系方式')
+
+
+@auth.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
@@ -35,45 +41,50 @@ def register():
         db.session.add(username)
         db.session.commit()
         token = username.generate_confirmation_token()
-        send_email(username.email, '邮箱验证', 'auth/confirm', user=username, token=token)
-        flash('您将会收到一封确认邮件，请点击其中的链接')
-        return redirect(url_for('login'))
-    return render_template('auth/register.html', title='注册', form=form)
+        send_email(username.email, u'邮箱验证', 'auth/confirm', user=username, token=token)
+        flash(u'您将会收到一封确认邮件，请点击其中的链接')
+        return redirect(url_for('auth.login'))
+    return render_template('register.html', title=u'注册', form=form)
 
 
-@app.route('/register/unconfirmed')
+@auth.route('/register/unconfirmed')
 def unconfirmed():
-    if current_user.is_anonymous or current_user.confirm:
+    if current_user.is_anonymous() or current_user.confirmed:
         return redirect(url_for('index'))
-    return render_template('auth/unconfirmed.html', title='警告')
+    return render_template('unconfirmed.html', title=u'邮箱验证')
 
 
-@app.route('/register/resend_email')
-@login_required
+@auth.route('/register/resend_email', methods=['GET', 'POST'])
 def resend_email():
-    token = current_user.generate_confirmation_token()
-    send_email(current_user.email, '验证您的邮箱',\
-               'auth/confirm', user=current_user, token=token)
-    flash('您将会收到一封确认邮件，请点击其中的链接')
-    return redirect(url_for('index'))
+    form = ForgetPasswordForm()
+    if form.validate_on_submit():
+        username = User.query.filter_by(email=form.email.data).first()
+        token = username.generate_confirmation_token()
+        send_email(username.email, u'验证您的邮箱', 'confirm', user=username, token=token)
+        flash(u'您将会收到一封确认邮件，请点击其中的链接')
+        return redirect(url_for('index'))
+    return render_template('resend_email.html', title=u'发送确认邮件', form=form)
 
 
-@app.route('/register/confirm/<token>')
+@auth.route('/register/confirm/<token>')
 @login_required
 def register_confirm(token):
     if current_user.confirmed:
         return redirect(url_for('index'))
     if current_user.confirm(token):
-        flash('注册成功')
+        flash(u'注册成功')
     else:
-        flash('该链接非法或已经失效')
-    return redirect(url_for('index'))
+        flash(u'该链接非法或已经失效')
+    user = User.query.filter_by(email=current_user.email).first()
+    user.confirmed = True
+    db.session.commit()
+    return redirect(url_for('auth.login'))
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@auth.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user is not None and current_user.is_authenticated:
-        return redirect(url_for('user'))
+        return redirect(url_for('user.profile'))
     form = LoginForm()
     if form.validate_on_submit():
         username = User.query.filter_by(email=form.email.data).first()
@@ -81,7 +92,7 @@ def login():
             if username.verify_password(form.password.data):
                 # Login and validate the user.
                 # user should be an instance of your `User` class
-                flash('登陆成功')
+                flash(u'登陆成功')
                 login_user(username, form.remember_me.data)
 
                 next = request.args.get('next')
@@ -91,52 +102,57 @@ def login():
                 #    return abort(400)
                 return redirect(next or url_for('index'))
             else:
-                flash('密码错误，请检查用户名或密码是否正确')
+                flash(u'密码错误，请您检查用户名或密码是否正确')
         else:
-            flash(form.email.data+' is not existed.')
-    return render_template('auth/login.html', title='登陆', form=form)
+            flash(u'账户' + form.email.data + u'不存在')
+    return render_template('login.html', title=u'登陆', form=form)
 
 
-@app.route('/logout')
+@auth.route('/logout')
 @login_required
 def logout():
     logout_user()
-    flash(message='您已注销')
-    return redirect(url_for('login'))
+    flash(message=u'您已注销')
+    return redirect(url_for('index'))
 
 
-@app.route('/forget_password', methods=['GET', 'POST'])
+@auth.route('/forget_password', methods=['GET', 'POST'])
 def forget_password():
     form = ForgetPasswordForm()
     if form.validate_on_submit():
-        rand = randint(1000,9999)
-        msg = Message('Confirm code', sender='1227753320@qq.com', recipients=form.email.data)
-        msg.body = '验证码是' + str(rand) + '.'
-        with app.app_context():
-            mail.send(msg)
+        username = User.query.filter_by(email=form.email.data).first()
+        token = username.generate_confirmation_token()
+        send_email(username.email, u'验证您的邮箱', 'forget_password', user=username, token=token)
         return redirect(url_for('index'))
-    return render_template('auth/forget_password.html', title='忘记密码', form=form)
+    return render_template('forget_password.html', title=u'忘记密码', form=form)
 
 
-@app.route('/reset_password', methods=['GET', 'POST'])
-def reset_password():
-    pass
+@auth.route('/reset_password/<token>/', methods=['GET', 'POST'])
+def reset_password(token):
+    email = request.args.get('email')
+    username = User.query.filter_by(email=email).first()
+    if username.confirm(token):
+        form = ResetPasswordForm()
+        if form.validate_on_submit():
+            if form.password.data == form.confirm.data:
+                username.password = form.password.data
+                db.session.commit()
+                flash(u'新密码已生效')
+        return render_template('auth.reset_password.html', title=u'密码重置', form=form)
+    else:
+        flash(u'该链接非法或已经失效')
 
 
-@app.route('/about')
-def about():
-    return render_template('main/about.html', title='联系方式')
-
-
-@app.route('/profile/<nickname>')
-def user(nickname):
-    user = User.query.filter_by(nickname=nickname).first()
-    if user is None:
+@user.route('/profile/<nickname>')
+def profile(nickname):
+    username = User.query.filter_by(nickname=nickname).first()
+    if username is None:
         abort(404)
-    return render_template('user/profile.html', title='个人信息', user=user)
+    articles = Article.query.filter_by(author_id=username.id).order_by(Article.timestamp.desc()).limit(3)
+    return render_template('profile.html', title=u'个人信息', user=username, articles=articles)
 
 
-@app.route('/profile/edit', methods=['GET', 'POST'])
+@user.route('/profile/edit', methods=['GET', 'POST'])
 @login_required
 def profile_edit():
     form = EditProfileForm()
@@ -145,28 +161,28 @@ def profile_edit():
         current_user.city = form.city.data
         current_user.about_me = form.about_me.data
         db.session.add(current_user)
-        flash(message='您的个人信息已经成功更新了')
-        return redirect(url_for('user', nickname=current_user.nickname))
+        flash(message=u'您的个人信息已经成功更新了')
+        return redirect(url_for('user.profile', nickname=current_user.nickname))
     form.nickname.data = current_user.nickname
     form.city.data = current_user.city
     form.about_me.data = current_user.about_me
-    return render_template('user/profile_edit.html', title='编辑个人信息', form=form)
+    return render_template('profile_edit.html', title=u'编辑个人信息', form=form)
 
 
-@app.route('/article/<int:id>')
-def article(id):
-    article = Article.query.get_or_404(id)
-    return render_template('article/article.html', title='文章', articles=[article], display=1)
-
-
-@app.route('/articles/user')
+@art.route('/articles')
 @login_required
 def user_article():
     articles = Article.query.filter_by(author_id=current_user.id).order_by(Article.timestamp.desc()).all()
-    return render_template('article/user_article.html', title='我的文章', articles=articles, display=0)
+    return render_template('user_article.html', title=u'我的文章', articles=articles, display=0)
 
 
-@app.route('/articles/new', methods=['GET', 'POST'])
+@art.route('/<int:id>')
+def article(id):
+    article = Article.query.get_or_404(id)
+    return render_template('article.html', title=u'文章', articles=[article], display=1)
+
+
+@art.route('/new', methods=['GET', 'POST'])
 @login_required
 def new_article():
     form = NewArticleFrom()
@@ -174,11 +190,11 @@ def new_article():
         article = Article(title=form.title.data, body=form.body.data, author_id=current_user.id)
         db.session.add(article)
         db.session.commit()
-        return redirect(url_for('user_article'))
-    return render_template('article/new.html', title='发文章', form=form, display=1)
+        return redirect(url_for('art.user_article'))
+    return render_template('new.html', title=u'发文章', form=form, display=1)
 
 
-@app.route('/article/edit/<int:id>', methods=['GET', 'POST'])
+@art.route('/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit_article(id):
     article = Article.query.get_or_404(id)
@@ -189,8 +205,8 @@ def edit_article(id):
         article.title = form.title.data
         article.body = form.body.data
         db.session.add(article)
-        flash('您的文章已经成功更新了')
-        return redirect(url_for('article', id=article.id))
+        flash(u'您的文章已经成功更新了')
+        return redirect(url_for('art.article', id=article.id))
     form.title.data = article.title
     form.body.data = article.body
-    return render_template('article/edit.html', title='编辑文章', form=form, id=article.id, display=1)
+    return render_template('edit.html', title=u'编辑文章', form=form, id=article.id, display=1)

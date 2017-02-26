@@ -10,8 +10,17 @@ from markdown import markdown
 import bleach
 
 
+class Follow(db.Model):
+    # connect two users by following
+
+    __tablename__ = 'follow'
+    follower_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    followed_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+
 class User(UserMixin, db.Model):
-    '''user, owner of the pure blog'''
+    # record the users of the light blog
 
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
@@ -22,7 +31,32 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128))
     Articles = db.RelationshipProperty('Article', backref='author', lazy=True)
     confirmed = db.Column(db.Boolean, default=False)
+    followed = db.relationship('Follow',  # 被追求者
+                               foreign_keys=[Follow.follower_id], # 外键，可选
+                               backref=db.backref('follower', lazy='joined'),  # 连接到关注者，一次加载全部关联实例
+                               lazy='dynamic',  # 关系属性返回查询对象，便于增加额外的查询条件
+                               cascade='all, delete-orphan')  # 删除该对象之后，顺便销毁指向该记录的实体
+    followers = db.relationship('Follow',  # 追求者
+                                foreign_keys=[Follow.followed_id],
+                                backref=db.backref('followed', lazy='joined'),
+                                lazy='dynamic',
+                                cascade='all, delete-orphan')
 
+    def follow(self, user):
+        if not self.is_following(user):
+            f = Follow(follower=self, followed=user)
+            db.session.add(f)
+
+    def unfollow(self, user):
+        f = self.followed.filter_by(followed_id=user.id).first()
+        if f:
+            db.session.delete(f)
+
+    def is_following(self, user):
+        return self.followed.filter_by(followed_id=user.id).first() is not None
+
+    def is_followed_by(self, user):
+        return self.followers.filter_by(follower_id=user.id).first() is not None
 
     @property
     def password(self):
@@ -59,7 +93,7 @@ class User(UserMixin, db.Model):
             return False
         if data.get('confirm') != self.id:
             return False
-        self.confirm =True
+        self.confirm = True
         db.session.add(self)
         return True
 
@@ -68,7 +102,7 @@ class User(UserMixin, db.Model):
 
 
 class Article(db.Model):
-    '''article, created by users'''
+    # record the article which created by users
 
     __tablename__ = 'article'
     id = db.Column(db.Integer, primary_key=True)
@@ -77,6 +111,7 @@ class Article(db.Model):
     body_html = db.Column(db.UnicodeText)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow )
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    valid = db.Column(db.Boolean, default=True)
 
     @staticmethod
     def on_changed_body(target, value, old_value, initiator):
@@ -91,12 +126,34 @@ class Article(db.Model):
 
 
 class Comment(db.Model):
-    '''comment, linked to article, reader's opinions'''
+    # reader's opinions, linked to article
 
     __tablename__ = 'comment'
     id = db.Column(db.Integer, primary_key=True)
-    commenter = db.Column(db.Integer, db.ForeignKey('user.id'))
+    commenter = db.Column(db.Integer, db.ForeignKey('user.id'), index=True)
     body = db.Column(db.UnicodeText)
+    timestamp = db.Column(db.DateTime, index=True)
+    valid = db.Column(db.Boolean, default=True)
+
+
+class Favorite(db.Model):
+    # record someone likes an article
+
+    __tablename__ = 'favorite'
+    id = db.Column(db.Integer, primary_key=True)
+    user = db.Column(db.Integer, db.ForeignKey('user.id'), index=True)
+    article = db.Column(db.Integer, db.ForeignKey('article.id'), index=True)
+    timestamp = db.Column(db.DateTime, index=True)
+    valid = db.Column(db.Boolean, default=False)
+
+
+class Read(db.Model):
+    # record whom the article read by
+
+    __tablename__ = 'read'
+    id = db.Column(db.Integer, primary_key=True)
+    reader = db.Column(db.Integer, db.ForeignKey('user.id'), index=True)
+    article = db.Column(db.Integer, db.ForeignKey('article.id'), index=True)
     timestamp = db.Column(db.DateTime, index=True)
 
 
@@ -105,3 +162,4 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 db.event.listen(Article.body, 'set', Article.on_changed_body)
+
