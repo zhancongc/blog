@@ -1,4 +1,4 @@
-# coding = utf-8
+# -*- coding: utf-8 -*-
 
 from datetime import datetime
 from app import db, login_manager
