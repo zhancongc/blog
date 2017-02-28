@@ -43,8 +43,5 @@ class EditProfileForm(FlaskForm):
 class NewArticleFrom(FlaskForm):
     title = StringField(u'标题', validators=[DataRequired(u'为这篇精彩的文章起一个标题吧')])
     body = PageDownField(u'内容', validators=[DataRequired(u'文章不能没有内容哦')],\
-                         render_kw={'rows': 14, 'placeholder': u'支持markdown，暂不支持发图片'})
-    # body = TextAreaField('body', validators=[DataRequired('null is not allowed.')],\
-    #                     render_kw={'rows': 14, 'placeholder': 'write something freely'})
+                         render_kw={'rows': 14, 'placeholder': u'支持markdown，暂不支持上传图片，更多请看写作帮助'})
     submit = SubmitField(u'提交')
-

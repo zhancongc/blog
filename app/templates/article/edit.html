@@ -9,8 +9,9 @@
                 {{ wtf.quick_form(form) }}
             </div>
         </div>
-        <div class="panel-footer text-right">
-            <a href="{{ url_for('art.article', id=id) }}">返回</a>
+        <div class="panel-footer">
+            <a style="float: left" href="http://www.jianshu.com/p/1e402922ee32/" target="_blank">markdown写作帮助</a>&nbsp;&nbsp;
+            <a style="float: right" href="{{ url_for('art.article', id=id) }}">返回</a>
         </div>
     </div>
 {% endblock %}

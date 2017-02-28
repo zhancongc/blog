@@ -26,7 +26,7 @@ def index():
     pagination = Article.query.order_by(Article.timestamp.desc()).limit(100).paginate(page, per_page=current_app.config[\
         'FLASK_ARTICLE_PER_PAGE'], error_out=False)
     articles = pagination.items
-    return render_template('index.html', title=u'最新文章', articles=articles, pagination=pagination, display=0)
+    return render_template('index.html', title=u'最新文章', articles=articles, pagination=pagination, display=False)
 
 
 @app.route('/about')
@@ -172,15 +172,21 @@ def profile_edit():
 
 @art.route('/my')
 @login_required
-def user_article():
+def my_article():
     articles = Article.query.filter_by(author_id=current_user.id).order_by(Article.timestamp.desc()).all()
-    return render_template('user_article.html', title=u'我的文章', articles=articles, display=0)
+    return render_template('user_article.html', title=u'我的文章', articles=articles, display=False)
+
+
+@art.route('/user/<int:id>')
+def user_article(id):
+    articles = Article.query.filter_by(author_id=id).order_by(Article.timestamp.desc()).all()
+    return render_template('user_article.html', title=u'ta的文章', articles=articles, display=False)
 
 
 @art.route('/<int:id>')
 def article(id):
     article = Article.query.get_or_404(id)
-    return render_template('article.html', title=u'文章', articles=[article], display=1)
+    return render_template('article.html', title=u'文章', articles=[article], display=True)
 
 
 @art.route('/new', methods=['GET', 'POST'])
@@ -191,7 +197,7 @@ def new_article():
         article = Article(title=form.title.data, body=form.body.data, author_id=current_user.id)
         db.session.add(article)
         db.session.commit()
-        return redirect(url_for('art.user_article'))
+        return redirect(url_for('art.my_article'))
     return render_template('new.html', title=u'发文章', form=form, display=1)
 
 
@@ -210,7 +216,7 @@ def edit_article(id):
         return redirect(url_for('art.article', id=article.id))
     form.title.data = article.title
     form.body.data = article.body
-    return render_template('edit.html', title=u'编辑文章', form=form, id=article.id, display=1)
+    return render_template('edit.html', title=u'编辑文章', form=form, id=article.id, display=True)
 
 
 @foll.route('/follow/<nickname>')
@@ -220,6 +226,9 @@ def follow(nickname):
     if username is None:
         flash(u'无效用户名')
         return redirect(url_for('index'))
+    if current_user.email is username.email:
+        flash(u'不能自己关注自己')
+        return redirect(url_for('user.profile', nickname=nickname))
     if current_user.is_following(username):
         flash(u'您无需重复关注')
         return redirect(url_for('user.profile', nickname=nickname))
@@ -235,6 +244,9 @@ def unfollow(nickname):
     if username is None:
         flash(u'无效用户名')
         return redirect(url_for('index'))
+    if current_user.email is username.email:
+        flash(u'不能自己取消关注自己')
+        return redirect(url_for('user.profile', nickname=nickname))
     if not current_user.is_following(username):
         flash(u'您之前并未关注 %s' % nickname)
         return redirect(url_for('user.profile', nickname=nickname))
@@ -265,5 +277,5 @@ def followed_by(nickname):
     page = request.args.get('page', 1, type=int)
     pagination = username.followed.paginate(page, per_page=current_app.config['FLASK_FOLLOW_PER_PAGE'], error_out=False)
     follows = [{'user': item.followed, 'timestamp': item.timestamp} for item in pagination.items]
-    return render_template('followed_by.html', user=username, title=u"ta关注的人", endpoint='foll.followed_by',\
+    return render_template('followed.html', user=username, title=u"ta关注的人", endpoint='foll.followed_by',\
                            pagination=pagination,  follows=follows)

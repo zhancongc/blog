@@ -29,10 +29,10 @@ class User(UserMixin, db.Model):
     city = db.Column(db.UnicodeText(64))
     about_me = db.Column(db.UnicodeText)
     password_hash = db.Column(db.String(128))
-    Articles = db.RelationshipProperty('Article', backref='author', lazy=True)
+    articles = db.RelationshipProperty('Article', backref='author', lazy=True)
     confirmed = db.Column(db.Boolean, default=False)
     followed = db.relationship('Follow',  # ta关注者的人
-                               foreign_keys=[Follow.follower_id], # 外键，可选
+                               foreign_keys=[Follow.follower_id],  # 外键，可选
                                backref=db.backref('follower', lazy='joined'),  # 连接到关注者，一次加载全部关联实例
                                lazy='dynamic',  # 关系属性返回查询对象，便于增加额外的查询条件
                                cascade='all, delete-orphan')  # 删除该对象之后，顺便销毁指向该记录的实体
@@ -57,6 +57,10 @@ class User(UserMixin, db.Model):
 
     def is_followed_by(self, user):
         return self.followers.filter_by(follower_id=user.id).first() is not None
+
+    @property
+    def followed_articles(self):
+        return Article.query.join(Follow, Follow.followed_id == Article.author_id).filter(Follow.follower_id == self.id)
 
     @property
     def password(self):
@@ -109,14 +113,14 @@ class Article(db.Model):
     title = db.Column(db.VARCHAR(64), index=True)
     body = db.Column(db.UnicodeText)
     body_html = db.Column(db.UnicodeText)
-    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow )
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     valid = db.Column(db.Boolean, default=True)
 
     @staticmethod
     def on_changed_body(target, value, old_value, initiator):
         allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code','em', 'i',
-                        'li','ol', 'pre', 'strong', 'ul', 'h1', 'h2', 'h3', 'p']
+                        'li', 'ol', 'pre', 'strong', 'ul', 'h1', 'h2', 'h3', 'p']
         target.body_html = bleach.linkify(bleach.clean(
             markdown(value, output_format='html'),
             tags=allowed_tags, strip=True))
@@ -162,4 +166,3 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 db.event.listen(Article.body, 'set', Article.on_changed_body)
-

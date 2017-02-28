@@ -26,11 +26,11 @@
                 <span>{{ user.followed.count() }}</span></a><br><br>
             <ul class="list-group">
                 <li class="list-group-item">城市：{% if user.city %}{{ user.city }}{% endif %}</li>
-                <li class="list-group-item">邮箱：{% if user.email %}{{ user.email }}{% endif %}</li>
+                <li class="list-group-item"><icon src="icon-mail">邮箱：{% if user.email %}{{ user.email }}{% endif %}</li>
                 <li class="list-group-item">个性签名：{% if user.about_me %}{{ user.about_me }}{% endif %}
             </ul>
             <ul class="list-group">
-                <li class="list-group-item">最新文章：</li>
+                <li class="list-group-item">最近文章：</li>
                 {% for article in articles %}
                     {% if article %}
                         <li class="list-group-item">
@@ -39,6 +39,8 @@
                         </li>
                     {% endif %}
                 {% endfor %}
+                <li class="list-group-item small">
+                    <a href="{{ url_for('art.user_article', id=user.id) }}">更多文章......</a></li>
             </ul>
         </div>
         {% if user == current_user %}

@@ -19,7 +19,8 @@
                         {% endfor %}
                     </table>
                 {% else %}
-                    <p>暂时没有关注您的用户，只有<a href="{{ url_for('art.new_article') }}">发文章</a>才能获取更多的关注哦</p>
+                    <p>暂时没有关注{% if user==current_user %}您{% else %}ta{% endif %}的用户，只有
+                        <a href="{{ url_for('art.new_article') }}">发文章</a>才能获取更多的关注哦</p>
                 {% endif %}
             </div>
         </div>
