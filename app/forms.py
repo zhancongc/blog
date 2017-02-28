@@ -16,8 +16,8 @@ class LoginForm(FlaskForm):
 
 
 class RegisterForm(FlaskForm):
-    nickname = StringField(u'昵称', validators=[DataRequired(u'为自己起一个酷酷的昵称吧')],
-                           render_kw={'placeholder': u'昵称不能空着哦'})
+    nickname = StringField(u'昵称', validators=[DataRequired(u'昵称不能空着哦')],
+                           render_kw={'placeholder': u'为自己起一个酷酷的昵称吧'})
     email = StringField(u'邮箱', validators=[DataRequired(u'邮箱不能空着哦'), Email()],
                         render_kw={'placeholder': u'为您的账户绑定一个邮箱'})
     password = PasswordField(u'密码', validators=[DataRequired(u'密码不能空着呀'), Length(6, 18,
