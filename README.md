@@ -1,1 +1,1 @@
-# Pure Blog
+# Light Blog
