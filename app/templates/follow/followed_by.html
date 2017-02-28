@@ -19,7 +19,8 @@
                         {% endfor %}
                     </table>
                 {% else %}
-                    <p>您暂时没有关注的用户，快去<a href="{{ url_for('index') }}">首页</a>关注优质文章的作者吧</p>
+                    <p>暂时没有关注{% if user==current_user %}您{% else %}ta{% endif %}的用户，快去
+                        <a href="{{ url_for('index') }}">首页</a>关注优质文章的作者吧</p>
                 {% endif %}
             </div>
         </div>
