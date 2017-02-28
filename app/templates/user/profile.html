@@ -4,7 +4,26 @@
     <div class="panel panel-default">
         <div class="panel-heading"><h4>{{ title }}</h4></div>
         <div class="panel-body">
-            <h2>{{ user.nickname }}</h2><br>
+            <h2>{{ user.nickname }}
+                {% if user != current_user %}
+                    {% if not current_user.is_anonymous==True and current_user.is_following(user) %}
+                        <a class="btn btn-default pull-right"
+                           href="{{ url_for('foll.unfollow', nickname=user.nickname) }}">取消关注</a>
+                    {% else %}
+                        <a class="btn btn-primary pull-right"
+                           href="{{ url_for('foll.follow', nickname=user.nickname) }}">关注</a>
+                    {% endif %}
+                {% endif %}
+            </h2>
+            {% if current_user.is_authenticated and user != current_user and user.is_following(current_user) %}
+                <span class="label label-default">ta在关注你</span>
+            {% endif %}
+            <a class="label label-success" href="{{ url_for('foll.followers', nickname=user.nickname) }}">
+                关注{% if user == current_user %}我{% else %}ta{% endif %}的：
+                <span>{{ user.followers.count() }}</span></a>
+            <a class="label label-info" href="{{ url_for('foll.followed_by', nickname=user.nickname) }}">
+                {% if user == current_user %}我{% else %}ta{% endif %}关注的：
+                <span>{{ user.followed.count() }}</span></a><br><br>
             <ul class="list-group">
                 <li class="list-group-item">城市：{% if user.city %}{{ user.city }}{% endif %}</li>
                 <li class="list-group-item">邮箱：{% if user.email %}{{ user.email }}{% endif %}</li>
@@ -22,10 +41,10 @@
                 {% endfor %}
             </ul>
         </div>
-        <div class="panel-footer text-right">
-            {% if user == current_user %}
+        {% if user == current_user %}
+            <div class="panel-footer text-right">
                 <a href="{{ url_for('user.profile_edit') }}">修改</a>
-            {% endif %}
-        </div>
+            </div>
+        {% endif %}
     </div>
 {% endblock %}

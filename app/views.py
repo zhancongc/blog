@@ -10,6 +10,7 @@ from .email import send_email
 auth = Blueprint('auth', __name__, template_folder='templates/auth')
 art = Blueprint('art', __name__, template_folder='templates/article')
 user = Blueprint('user', __name__, template_folder='templates/user')
+foll = Blueprint('foll', __name__, template_folder='templates/follow')
 
 
 @auth.before_app_request
@@ -22,8 +23,8 @@ def before_request():
 @app.route('/')
 def index():
     page = request.args.get('page', 1, type=int)
-    pagination = Article.query.order_by(Article.timestamp.desc()).paginate(page, per_page=current_app.config[\
-        'FLASKY_ARTICLE_PER_PAGE'], error_out=False)
+    pagination = Article.query.order_by(Article.timestamp.desc()).limit(100).paginate(page, per_page=current_app.config[\
+        'FLASK_ARTICLE_PER_PAGE'], error_out=False)
     articles = pagination.items
     return render_template('index.html', title=u'最新文章', articles=articles, pagination=pagination, display=0)
 
@@ -169,7 +170,7 @@ def profile_edit():
     return render_template('profile_edit.html', title=u'编辑个人信息', form=form)
 
 
-@art.route('/articles')
+@art.route('/my')
 @login_required
 def user_article():
     articles = Article.query.filter_by(author_id=current_user.id).order_by(Article.timestamp.desc()).all()
@@ -210,3 +211,59 @@ def edit_article(id):
     form.title.data = article.title
     form.body.data = article.body
     return render_template('edit.html', title=u'编辑文章', form=form, id=article.id, display=1)
+
+
+@foll.route('/follow/<nickname>')
+@login_required
+def follow(nickname):
+    username = User.query.filter_by(nickname=nickname).first()
+    if username is None:
+        flash('无效用户名')
+        return redirect(url_for('index'))
+    if current_user.is_following(username):
+        flash('您无需重复关注')
+        return redirect(url_for('user.profile', nickname=nickname))
+    current_user.follow(username)
+    flash('您已经关注了 %s.' % nickname)
+    return redirect(url_for('user.profile', nickname=nickname))
+
+
+@foll.route('/unfollow/<nickname>')
+@login_required
+def unfollow(nickname):
+    username = User.query.filter_by(nickname=nickname).first()
+    if username is None:
+        flash('无效用户名')
+        return redirect(url_for('index'))
+    if not current_user.is_following(username):
+        flash('您之前并未关注 %s' % nickname)
+        return redirect(url_for('user.profile', nickname=nickname))
+    current_user.unfollow(username)
+    flash('您已经取消关注了 %s' % nickname)
+    return redirect(url_for('user.profile', nickname=nickname))
+
+
+@foll.route('/followers/<nickname>')
+def followers(nickname):
+    username = User.query.filter_by(nickname=nickname).first()
+    if username is None:
+        flash('无效的用户名')
+        return redirect(url_for('index'))
+    page = request.args.get('page', 1, type=int)
+    pagination = username.followers.paginate(page, per_page=current_app.config['FLASK_FOLLOW_PER_PAGE'], error_out=False)
+    followers = [{'user': item.follower, 'timestamp': item.timestamp} for item in pagination.items]
+    return render_template('followers.html', user=username, title=u"关注ta的人", endpoint='foll.followers',\
+                           pagination=pagination,  followers=followers)
+
+
+@foll.route('/followed_by/<nickname>')
+def followed_by(nickname):
+    username = User.query.filter_by(nickname=nickname).first()
+    if user is None:
+        flash('无效的用户名')
+        return redirect(url_for('index'))
+    page = request.args.get('page', 1, type=int)
+    pagination = username.followed.paginate(page, per_page=current_app.config['FLASK_FOLLOW_PER_PAGE'], error_out=False)
+    follows = [{'user': item.followed, 'timestamp': item.timestamp} for item in pagination.items]
+    return render_template('followed_by.html', user=username, title=u"ta关注的人", endpoint='foll.followed_by',\
+                           pagination=pagination,  follows=follows)

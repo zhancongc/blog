@@ -31,12 +31,12 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128))
     Articles = db.RelationshipProperty('Article', backref='author', lazy=True)
     confirmed = db.Column(db.Boolean, default=False)
-    followed = db.relationship('Follow',  # 被追求者
+    followed = db.relationship('Follow',  # ta关注者的人
                                foreign_keys=[Follow.follower_id], # 外键，可选
                                backref=db.backref('follower', lazy='joined'),  # 连接到关注者，一次加载全部关联实例
                                lazy='dynamic',  # 关系属性返回查询对象，便于增加额外的查询条件
                                cascade='all, delete-orphan')  # 删除该对象之后，顺便销毁指向该记录的实体
-    followers = db.relationship('Follow',  # 追求者
+    followers = db.relationship('Follow',  # 关注ta的人
                                 foreign_keys=[Follow.followed_id],
                                 backref=db.backref('followed', lazy='joined'),
                                 lazy='dynamic',

@@ -29,8 +29,9 @@ login_manager.login_view = '/auth/login'
 pagedown = PageDown(app)
 
 from app import models, views
-from app.views import auth, art, user
+from app.views import auth, art, user, foll
 
 app.register_blueprint(auth, url_prefix='/auth')
 app.register_blueprint(art, url_prefix='/article')
 app.register_blueprint(user, url_prefix='/user')
+app.register_blueprint(foll)
