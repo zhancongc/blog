@@ -218,13 +218,13 @@ def edit_article(id):
 def follow(nickname):
     username = User.query.filter_by(nickname=nickname).first()
     if username is None:
-        flash('无效用户名')
+        flash(u'无效用户名')
         return redirect(url_for('index'))
     if current_user.is_following(username):
-        flash('您无需重复关注')
+        flash(u'您无需重复关注')
         return redirect(url_for('user.profile', nickname=nickname))
     current_user.follow(username)
-    flash('您已经关注了 %s.' % nickname)
+    flash(u'您已经关注了 %s.' % nickname)
     return redirect(url_for('user.profile', nickname=nickname))
 
 
@@ -233,13 +233,13 @@ def follow(nickname):
 def unfollow(nickname):
     username = User.query.filter_by(nickname=nickname).first()
     if username is None:
-        flash('无效用户名')
+        flash(u'无效用户名')
         return redirect(url_for('index'))
     if not current_user.is_following(username):
-        flash('您之前并未关注 %s' % nickname)
+        flash(u'您之前并未关注 %s' % nickname)
         return redirect(url_for('user.profile', nickname=nickname))
     current_user.unfollow(username)
-    flash('您已经取消关注了 %s' % nickname)
+    flash(u'您已经取消关注了 %s' % nickname)
     return redirect(url_for('user.profile', nickname=nickname))
 
 
@@ -247,7 +247,7 @@ def unfollow(nickname):
 def followers(nickname):
     username = User.query.filter_by(nickname=nickname).first()
     if username is None:
-        flash('无效的用户名')
+        flash(u'无效的用户名')
         return redirect(url_for('index'))
     page = request.args.get('page', 1, type=int)
     pagination = username.followers.paginate(page, per_page=current_app.config['FLASK_FOLLOW_PER_PAGE'], error_out=False)
@@ -260,7 +260,7 @@ def followers(nickname):
 def followed_by(nickname):
     username = User.query.filter_by(nickname=nickname).first()
     if user is None:
-        flash('无效的用户名')
+        flash(u'无效的用户名')
         return redirect(url_for('index'))
     page = request.args.get('page', 1, type=int)
     pagination = username.followed.paginate(page, per_page=current_app.config['FLASK_FOLLOW_PER_PAGE'], error_out=False)
