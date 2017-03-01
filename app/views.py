@@ -29,11 +29,6 @@ def index():
     return render_template('index.html', title=u'最新文章', articles=articles, pagination=pagination, display=False)
 
 
-@app.route('/about')
-def about():
-    return render_template('about.html', title=u'联系方式')
-
-
 @auth.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
