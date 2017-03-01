@@ -139,7 +139,7 @@ def reset_password(token):
                 db.session.commit()
                 flash(u'新密码已生效')
                 return redirect(url_for('auth.login'))
-        return render_template('auth.reset_password.html', title=u'密码重置', form=form)
+        return render_template('reset_password.html', title=u'密码重置', form=form)
     else:
         flash(u'该链接非法或已经失效')
 

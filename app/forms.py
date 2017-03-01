@@ -37,10 +37,10 @@ class ForgetPasswordForm(FlaskForm):
 
 
 class ResetPasswordForm(FlaskForm):
-    password = StringField(u'新密码', validators=[DataRequired(u'密码不能空着哦')],
-                           render_kw={'placeholder': u'填写新密码'})
-    confirm = StringField(u'确认密码', validators=[DataRequired(u'确认密码可不能忘哦'), EqualTo(u'两次密码好像不一样')],
-                          render_kw={'placeholder': u'再输一遍您的密码'})
+    password = PasswordField(u'新密码', validators=[DataRequired(u'密码不能空着哦')],
+                             render_kw={'placeholder': u'填写新密码'})
+    confirm = PasswordField(u'确认密码', validators=[DataRequired(u'确认密码可不能忘哦'), EqualTo('password', u'两次密码好像不一样')],
+                            render_kw={'placeholder': u'再输一遍您的密码'})
     submit = SubmitField(u'提交')
 
 
