@@ -29,7 +29,6 @@
                 <ul class="nav navbar-nav">
                     <li><a href="{{ url_for('art.new_article') }}">发文章</a></li>
                     <li><a href="{{ url_for('art.my_article') }}">我的文章</a></li>
-                    <li><a href="{{ url_for('about') }}">关于本站</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     {% if current_user.is_authenticated %}
@@ -55,6 +54,11 @@
             </div>
         {% endfor %}
         {% block page_content %}{% endblock %}
+        <span style="margin-bottom: 10px">
+            任何关于本站的问题，请通过邮件联系站长:
+            <a href="mailto:zhancongc@lightblog.site">zhancongc@lightblog.site</a><br>
+            &copy; Light Blog<br><br>
+        </span>
     </div>
 {% endblock %}
 
