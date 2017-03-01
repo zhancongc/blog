@@ -123,6 +123,7 @@ def forget_password():
         username = User.query.filter_by(email=form.email.data).first()
         token = username.generate_confirmation_token()
         send_email(username.email, u'验证您的邮箱', 'forget_password', user=username, token=token)
+        flash(u'您将会收到一封来自Light Blog的邮件，点击其中的链接重置密码')
         return redirect(url_for('index'))
     return render_template('forget_password.html', title=u'忘记密码', form=form)
 
