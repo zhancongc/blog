@@ -178,8 +178,11 @@ def my_article():
 
 @art.route('/user/<int:id>')
 def user_article(id):
-    articles = Article.query.filter_by(author_id=id).order_by(Article.timestamp.desc()).all()
-    return render_template('user_article.html', title=u'ta的文章', articles=articles, display=False)
+    page = request.args.get('page', 1, type=int)
+    pagination = Article.query.filter_by(author_id=id).order_by(Article.timestamp.desc()).paginate(
+        page, per_page=current_app.config['FLASK_ARTICLE_PER_PAGE'], error_out=False)
+    articles = pagination.items
+    return render_template('user_article.html', title=u'ta的文章', articles=articles, pagination=pagination, display=False)
 
 
 @art.route('/<int:id>', methods=['GET', 'POST'])
