@@ -4,7 +4,7 @@
     <div class="panel panel-default">
         <div class="panel-heading"><h4>{{ title }}</h4></div>
         <div class="panel-body">
-            <h2>{{ user.nickname }}
+            <div><h2>{{ user.nickname }}
                 {% if user != current_user %}
                     {% if not current_user.is_anonymous==True and current_user.is_following(user) %}
                         <a class="btn btn-default pull-right"
@@ -23,7 +23,8 @@
                 <span>{{ user.followers.count() }}</span></a>
             <a class="label label-info" href="{{ url_for('foll.followed_by', id=user.id) }}">
                 {% if user == current_user %}我{% else %}ta{% endif %}关注的：
-                <span>{{ user.followed.count() }}</span></a><br><br>
+                <span>{{ user.followed.count() }}</span></a>
+            </div><br><br>
             <ul class="list-group">
                 <li class="list-group-item">城市：{% if user.city %}{{ user.city }}{% endif %}</li>
                 <li class="list-group-item"><icon src="icon-mail">邮箱：{% if user.email %}{{ user.email }}{% endif %}</li>
