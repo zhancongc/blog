@@ -6,9 +6,11 @@
         <div class="panel-heading"><h4>{{ title }}</h4></div>
         <div class="panel-body">
             {% include 'article/_articles.html' %}
-        </div>
-        <div>
-            {{ macros.pagination_widget(pagination, 'index') }}
+            {% if pagination %}
+                <div style="float: right;">
+                    {{ macros.pagination_widget(pagination, 'index') }}
+                </div>
+            {% endif %}
         </div>
     </div>
 {% endblock %}
