@@ -4,13 +4,18 @@
 
 {% block page_content %}
     {% include 'article/_articles.html' %}
-    <div>
-        {{ wtf.quick_form(form) }}
-    </div>
-    {% include 'article/_comments.html' %}
-    {% if pagination %}
-        <div class="pagination">
-            {{ macros.pagination_widget(pagination, 'art.article', fragment='#comments', id=articles[0].id) }}
+    <div class="panel panel-default">
+        <div class="panel-heading"></div>
+    <div class="panel-body">
+        <div>
+            {{ wtf.quick_form(form) }}
         </div>
-    {% endif %}
+        {% include 'article/_comments.html' %}
+        {% if pagination %}
+            <div>
+                {{ macros.pagination_widget(pagination, 'art.article', fragment='#comments', id=articles[0].id) }}
+            </div>
+        {% endif %}
+    </div>
+    </div>
 {% endblock %}
