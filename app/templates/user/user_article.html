@@ -8,7 +8,7 @@
             {% include 'article/_articles.html' %}
             {% if pagination %}
                 <div style="float: right;">
-                    {{ macros.pagination_widget(pagination, 'art.article', fragment='#comments', id=articles[0].id) }}
+                    {{ macros.pagination_widget(pagination, 'art.article') }}
                 </div>
             {% endif %}
         </div>
