@@ -29,7 +29,8 @@ class User(UserMixin, db.Model):
     city = db.Column(db.UnicodeText(64))
     about_me = db.Column(db.UnicodeText)
     password_hash = db.Column(db.String(128))
-    articles = db.RelationshipProperty('Article', backref='author', lazy=True)
+    articles = db.relationship('Article', backref='author', lazy=True)
+    comments = db.relationship('Comment', backref='author', lazy=True)
     confirmed = db.Column(db.Boolean, default=False)
     followed = db.relationship('Follow',  # ta关注者的人
                                foreign_keys=[Follow.follower_id],  # 外键，可选
@@ -115,6 +116,7 @@ class Article(db.Model):
     body_html = db.Column(db.UnicodeText)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    comments = db.relationship('Comment', backref='article', lazy='dynamic')
     valid = db.Column(db.Boolean, default=True)
 
     @staticmethod
@@ -128,6 +130,8 @@ class Article(db.Model):
     def __repr__(self):
         return '<Post %r>' % self.body
 
+db.event.listen(Article.body, 'set', Article.on_changed_body)
+
 
 class Comment(db.Model):
     # reader's opinions, linked to article
@@ -135,8 +139,9 @@ class Comment(db.Model):
     __tablename__ = 'comment'
     id = db.Column(db.Integer, primary_key=True)
     commenter = db.Column(db.Integer, db.ForeignKey('user.id'), index=True)
+    article_id = db.Column(db.Integer, db.ForeignKey('article.id'), index=True)
     body = db.Column(db.UnicodeText)
-    timestamp = db.Column(db.DateTime, index=True)
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     valid = db.Column(db.Boolean, default=True)
 
 
@@ -164,5 +169,3 @@ class Read(db.Model):
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
-
-db.event.listen(Article.body, 'set', Article.on_changed_body)

@@ -1,0 +1,15 @@
+<div class="form-group">
+    {% if comments %}
+        <div style="font-weight: bolder; margin-top: 20px;">大家的评论</div>
+        <ul class="list-group">
+            {% for comment in comments %}
+                <li class="list-group-item">
+                    <div><a href="{{ url_for('user.profile', id=comment.author.id) }}">
+                        {{ comment.author.nickname }}</a>
+                        <span style="float: right;">{{ moment(comment.timestamp).fromNow() }}</span></div>
+                    <div style="margin-top: 5px; margin-bottom: 5px;">{{ comment.body | safe }}</div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+</div>

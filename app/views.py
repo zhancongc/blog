@@ -3,8 +3,8 @@
 from flask import render_template, flash, redirect, url_for, request, abort, current_app, Blueprint
 from flask_login import login_user, logout_user, login_required, current_user
 from app import app, db
-from app.forms import LoginForm, RegisterForm, ForgetPasswordForm, ResetPasswordForm, EditProfileForm, NewArticleFrom
-from app.models import User, Article
+from app.forms import LoginForm, RegisterForm, ForgetPasswordForm, ResetPasswordForm, EditProfileForm, NewArticleFrom, NewCommentForm
+from app.models import User, Article, Comment
 from .email import send_email
 
 auth = Blueprint('auth', __name__, template_folder='templates/auth')
@@ -73,13 +73,13 @@ def register_confirm(token):
         flash(u'该链接非法或已经失效')
     current_user.confirmed = True
     db.session.commit()
-    return redirect(url_for('user.profile', nickname=current_user.nickname))
+    return redirect(url_for('user.profile', id=current_user.id))
 
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user is not None and current_user.is_authenticated:
-        return redirect(url_for('user.profile', nickname=current_user.nickname))
+        return redirect(url_for('user.profile', id=current_user.id))
     form = LoginForm()
     if form.validate_on_submit():
         username = User.query.filter_by(email=form.email.data).first()
@@ -140,9 +140,9 @@ def reset_password(token):
         flash(u'该链接非法或已经失效')
 
 
-@user.route('/profile/<nickname>')
-def profile(nickname):
-    username = User.query.filter_by(nickname=nickname).first()
+@user.route('/profile/<int:id>')
+def profile(id):
+    username = User.query.get_or_404(id)
     if username is None:
         abort(404)
     articles = Article.query.filter_by(author_id=username.id).order_by(Article.timestamp.desc()).limit(3)
@@ -159,7 +159,7 @@ def profile_edit():
         current_user.about_me = form.about_me.data
         db.session.add(current_user)
         flash(message=u'您的个人信息已经成功更新了')
-        return redirect(url_for('user.profile', nickname=current_user.nickname))
+        return redirect(url_for('user.profile', id=current_user.id))
     form.nickname.data = current_user.nickname
     form.city.data = current_user.city
     form.about_me.data = current_user.about_me
@@ -179,10 +179,29 @@ def user_article(id):
     return render_template('user_article.html', title=u'ta的文章', articles=articles, display=False)
 
 
-@art.route('/<int:id>')
+@art.route('/<int:id>', methods=['GET', 'POST'])
 def article(id):
     article = Article.query.get_or_404(id)
-    return render_template('article.html', title=u'文章', articles=[article], display=True)
+    form = NewCommentForm()
+    content = request.args.get('content')
+    if content:
+        form.body.data = content
+    if form.validate_on_submit():
+        if current_user.is_anonymous is True:
+            content = form.body.data
+            return redirect(url_for('auth.login', next=url_for('art.article', id=article.id, page=-1, content=content)))
+        comment = Comment(body=form.body.data, author=current_user._get_current_object(), article=article)
+        db.session.add(comment)
+        flash(u'您的评论已提交')
+        return redirect(url_for('art.article', id=article.id, page=-1))
+    page = request.args.get('page', 1, type=int)
+    if page == -1:
+        page = (article.comments.count() - 1)/current_app.config['FLASK_COMMENTS_PER_PAGE'] + 1
+    pagination = article.comments.order_by(Comment.timestamp.asc()).paginate(page,
+                                                                             per_page=current_app.config['FLASK_COMMENTS_PER_PAGE'], error_out=False)
+    comments = pagination.items
+    return render_template('article.html', title=u'文章', articles=[article], form=form,
+                           display=True, comments=comments, pagination=pagination)
 
 
 @art.route('/new', methods=['GET', 'POST'])
@@ -215,45 +234,45 @@ def edit_article(id):
     return render_template('edit.html', title=u'编辑文章', form=form, id=article.id, display=True)
 
 
-@foll.route('/follow/<nickname>')
+@foll.route('/follow/<int:id>')
 @login_required
-def follow(nickname):
-    username = User.query.filter_by(nickname=nickname).first()
+def follow(id):
+    username = User.query.get_or_404(id)
     if username is None:
         flash(u'无效用户名')
         return redirect(url_for('index'))
     if current_user.email is username.email:
         flash(u'不能自己关注自己')
-        return redirect(url_for('user.profile', nickname=nickname))
+        return redirect(url_for('user.profile', id=username.id))
     if current_user.is_following(username):
         flash(u'您无需重复关注')
-        return redirect(url_for('user.profile', nickname=nickname))
+        return redirect(url_for('user.profile', id=username.id))
     current_user.follow(username)
-    flash(u'您已经关注了 %s.' % nickname)
-    return redirect(url_for('user.profile', nickname=nickname))
+    flash(u'您已经关注了 %s.' % username.nickname)
+    return redirect(url_for('user.profile', id=username.id))
 
 
-@foll.route('/unfollow/<nickname>')
+@foll.route('/unfollow/<int:id>')
 @login_required
-def unfollow(nickname):
-    username = User.query.filter_by(nickname=nickname).first()
+def unfollow(id):
+    username = User.query.get_or_404(id)
     if username is None:
         flash(u'无效用户名')
         return redirect(url_for('index'))
     if current_user.email is username.email:
         flash(u'不能自己取消关注自己')
-        return redirect(url_for('user.profile', nickname=nickname))
+        return redirect(url_for('user.profile', id=username.id))
     if not current_user.is_following(username):
-        flash(u'您之前并未关注 %s' % nickname)
-        return redirect(url_for('user.profile', nickname=nickname))
+        flash(u'您之前并未关注 %s' % username.nickname)
+        return redirect(url_for('user.profile', id=username.id))
     current_user.unfollow(username)
-    flash(u'您已经取消关注了 %s' % nickname)
-    return redirect(url_for('user.profile', nickname=nickname))
+    flash(u'您已经取消关注了 %s' % username.nickname)
+    return redirect(url_for('user.profile', id=username.id))
 
 
-@foll.route('/followers/<nickname>')
-def followers(nickname):
-    username = User.query.filter_by(nickname=nickname).first()
+@foll.route('/followers/<int:id>')
+def followers(id):
+    username = User.query.get_or_404(id)
     if username is None:
         flash(u'无效的用户名')
         return redirect(url_for('index'))
@@ -264,9 +283,9 @@ def followers(nickname):
                            pagination=pagination,  followers=followers)
 
 
-@foll.route('/followed_by/<nickname>')
-def followed_by(nickname):
-    username = User.query.filter_by(nickname=nickname).first()
+@foll.route('/followed_by/<int:id>')
+def followed_by(id):
+    username = User.query.get_or_404(id)
     if user is None:
         flash(u'无效的用户名')
         return redirect(url_for('index'))

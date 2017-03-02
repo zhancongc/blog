@@ -12,7 +12,7 @@
                         {% for follower in followers %}
                             <tr>
                                 <td class="text-left">
-                                    <a href="{{ url_for('user.profile', nickname=follower.user.nickname) }}">
+                                    <a href="{{ url_for('user.profile', id=follower.user.id) }}">
                                     {{ follower.user.nickname }}</a></td>
                                 <td class="text-right">{{ moment(follower.timestamp).format('L') }}</td>
                             </tr>
@@ -25,7 +25,7 @@
             </div>
         </div>
         <div class="pagination">
-            {{ macros.pagination_widget(pagination, endpoint, nickname = user.nickname) }}
+            {{ macros.pagination_widget(pagination, endpoint, id = user.id) }}
         </div>
     </div>
 {% endblock %}

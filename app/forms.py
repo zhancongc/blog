@@ -47,7 +47,7 @@ class ResetPasswordForm(FlaskForm):
 class EditProfileForm(FlaskForm):
     nickname = StringField(u'昵称', validators=[Length(0, 64)], render_kw={'placeholder': u'填写您的昵称'})
     city = StringField(u'城市', validators=[Length(0, 64)], render_kw={'placeholder': u'填写您所在的城市'})
-    about_me = TextAreaField(u'个性签名', render_kw={'placeholder': u'一句话来展示自己'})
+    about_me = TextAreaField(u'个性签名', render_kw={'rows': 2,'placeholder': u'一句话来展示自己'})
     submit = SubmitField(u'提交')
 
 
@@ -56,4 +56,10 @@ class NewArticleFrom(FlaskForm):
                         render_kw={'placeholder': u'为这篇精彩的文章起一个标题吧'})
     body = PageDownField(u'内容', validators=[DataRequired(u'文章不能没有内容哦')],
                          render_kw={'rows': 14, 'placeholder': u'支持markdown，暂不支持上传图片。了解更多markdown语法，请点击底部写作帮助'})
+    submit = SubmitField(u'提交')
+
+
+class NewCommentForm(FlaskForm):
+    body = TextAreaField(u'评论（需登陆）', validators=[DataRequired(u'什么都没填是不能提交的哦')],
+                         render_kw={'rows': 2, 'placeholder': u'说说您的想法吧'})
     submit = SubmitField(u'提交')
