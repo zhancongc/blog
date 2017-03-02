@@ -21,11 +21,11 @@
                     {{ article.body }}
                 {% endif %}
             </div>
-            <div class="panel-footer text-right">
-                {% if current_user.id == article.author_id %}
+            {% if current_user.id == article.author_id %}
+                <div class="panel-footer text-right">
                     <a href="{{ url_for('art.edit_article', id=article.id) }}">修改</a>
-                {% endif %}
-            </div>
+                </div>
+            {% endif %}
         {% else %}
             <div class="panel-heading">
                 <h4>
