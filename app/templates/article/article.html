@@ -9,8 +9,8 @@
     </div>
     {% include 'article/_comments.html' %}
     {% if pagination %}
-    <div class="pagination">
-        {{ macros.pagination_widget(pagination, 'art.article', fragment='#comments', id=articles[0].id) }}
-    </div>
+        <div class="pagination">
+            {{ macros.pagination_widget(pagination, 'art.article', fragment='#comments', id=articles[0].id) }}
+        </div>
     {% endif %}
 {% endblock %}
