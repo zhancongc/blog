@@ -1,19 +1,19 @@
 {% if articles %}
     {% for article in articles %}
         <div class="panel panel-default">
+        {% if display %}
             <div class="panel-heading">
-                <h4>
+                <h2>
                     {% if display %}
                         {{ article.title }}
                     {% else %}
                         <a href="{{ url_for('art.article', id=article.id) }}">{{ article.title }}</a>
                     {% endif %}
-                </h4>
-                <a href="{{ url_for('user.profile', nickname=article.author.nickname) }}">
-                    {{ article.author.nickname }}</a>
-                {{ moment(article.timestamp).fromNow() }}
+                </h2>
+                <span><a href="{{ url_for('user.profile', id=article.author.id) }}">
+                    {{ article.author.nickname }}</a></span>
+                <div style="float: right;">{{ moment(article.timestamp).fromNow() }}</div>
             </div>
-        {% if display %}
             <div class="panel-body">
                 {% if article.body_html %}
                     {{ article.body_html | safe }}
@@ -25,6 +25,19 @@
                 {% if current_user.id == article.author_id %}
                     <a href="{{ url_for('art.edit_article', id=article.id) }}">修改</a>
                 {% endif %}
+            </div>
+        {% else %}
+            <div class="panel-heading">
+                <h4>
+                    {% if display %}
+                        {{ article.title }}
+                    {% else %}
+                        <a href="{{ url_for('art.article', id=article.id) }}">{{ article.title }}</a>
+                    {% endif %}
+                </h4>
+                <span><a href="{{ url_for('user.profile', id=article.author.id) }}">
+                    {{ article.author.nickname }}</a></span>
+                <div style="float: right;">{{ moment(article.timestamp).fromNow() }}</div>
             </div>
         {% endif %}
         </div>

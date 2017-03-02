@@ -8,20 +8,20 @@
                 {% if user != current_user %}
                     {% if not current_user.is_anonymous==True and current_user.is_following(user) %}
                         <a class="btn btn-default pull-right"
-                           href="{{ url_for('foll.unfollow', nickname=user.nickname) }}">取消关注</a>
+                           href="{{ url_for('foll.unfollow', id=user.id) }}">取消关注</a>
                     {% else %}
                         <a class="btn btn-primary pull-right"
-                           href="{{ url_for('foll.follow', nickname=user.nickname) }}">关注</a>
+                           href="{{ url_for('foll.follow', id=user.id) }}">关注</a>
                     {% endif %}
                 {% endif %}
             </h2>
             {% if current_user.is_authenticated and user != current_user and user.is_following(current_user) %}
                 <span class="label label-default">ta在关注你</span>
             {% endif %}
-            <a class="label label-success" href="{{ url_for('foll.followers', nickname=user.nickname) }}">
+            <a class="label label-success" href="{{ url_for('foll.followers', id=user.id) }}">
                 关注{% if user == current_user %}我{% else %}ta{% endif %}的：
                 <span>{{ user.followers.count() }}</span></a>
-            <a class="label label-info" href="{{ url_for('foll.followed_by', nickname=user.nickname) }}">
+            <a class="label label-info" href="{{ url_for('foll.followed_by', id=user.id) }}">
                 {% if user == current_user %}我{% else %}ta{% endif %}关注的：
                 <span>{{ user.followed.count() }}</span></a><br><br>
             <ul class="list-group">
