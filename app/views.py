@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from flask import render_template, flash, redirect, url_for, request, abort, current_app, Blueprint
+from flask import render_template, flash, redirect, url_for, request, abort, current_app, Blueprint, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
 from app import app, db
 from app.forms import LoginForm, RegisterForm, ForgetPasswordForm, ResetPasswordForm, EditProfileForm, NewArticleFrom, NewCommentForm
@@ -23,7 +23,7 @@ def before_request():
 @app.route('/')
 def index():
     page = request.args.get('page', 1, type=int)
-    pagination = Article.query.order_by(Article.timestamp.desc()).limit(100).paginate(page, per_page=current_app.config[\
+    pagination = Article.query.order_by(Article.timestamp.desc()).paginate(page, per_page=current_app.config[\
         'FLASK_ARTICLE_PER_PAGE'], error_out=False)
     articles = pagination.items
     return render_template('index.html', title=u'最新文章', articles=articles, pagination=pagination, display=False)
@@ -169,8 +169,11 @@ def profile_edit():
 @art.route('/my')
 @login_required
 def my_article():
-    articles = Article.query.filter_by(author_id=current_user.id).order_by(Article.timestamp.desc()).all()
-    return render_template('user_article.html', title=u'我的文章', articles=articles, display=False)
+    page = request.args.get('page', 1, type=int)
+    pagination = Article.query.filter_by(author_id=current_user.id).order_by(Article.timestamp.desc()).paginate(
+        page, per_page=current_app.config['FLASK_ARTICLE_PER_PAGE'], error_out=False)
+    articles = pagination.items
+    return render_template('user_article.html', title=u'我的文章', articles=articles, pagination=pagination, display=False)
 
 
 @art.route('/user/<int:id>')

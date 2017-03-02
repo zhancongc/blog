@@ -1,5 +1,5 @@
-<div class="form-group">
-    {% if comments %}
+{% if comments %}
+    <div class="form-group">
         <div style="font-weight: bolder; margin-top: 20px;">大家的评论</div>
         <ul class="list-group">
             {% for comment in comments %}
@@ -11,5 +11,6 @@
                 </li>
             {% endfor %}
         </ul>
-    {% endif %}
-</div>
+    </div>
+{% endif %}
+
