@@ -4,7 +4,9 @@
     <div class="panel panel-default">
         <div class="panel-heading"><h4>{{ title }}</h4></div>
         <div class="panel-body">
-            <div><h2>{{ user.nickname }}
+            <a style="float: left; width: 100px; height: 100px;margin-top: 10px;">
+                <img style="width: 100%; height: 100%;" src="/static/me.svg"></a>
+            <div style="margin-left: 120px;"><h2>{{ user.nickname }}
                 {% if user != current_user %}
                     {% if not current_user.is_anonymous==True and current_user.is_following(user) %}
                         <a class="btn btn-default pull-right"
