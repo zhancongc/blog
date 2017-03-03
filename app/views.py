@@ -97,7 +97,7 @@ def login():
                 #    return abort(400)
                 return redirect(next or url_for('index'))
             else:
-                flash(u'密码错误，请您检查用户名或密码是否正确')
+                flash(u'登陆出错，请您检查用户名或密码是否正确')
         else:
             flash(u'账户' + form.email.data + u'不存在')
     return render_template('login.html', title=u'登陆', form=form)

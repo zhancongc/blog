@@ -23,9 +23,7 @@
                         <a href="{{ url_for('index') }}">首页</a>关注优质文章的作者吧</p>
                 {% endif %}
             </div>
-        </div>
-        <div class="pagination">
-            {{ macros.pagination_widget(pagination, endpoint, id = user.id) }}
+            <div>{{ macros.pagination_widget(pagination, endpoint, id = user.id) }}</div>
         </div>
     </div>
 {% endblock %}

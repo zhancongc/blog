@@ -23,9 +23,7 @@
                         <a href="{{ url_for('art.new_article') }}">发文章</a>才能获取更多的关注哦</p>
                 {% endif %}
             </div>
-        </div>
-        <div class="pagination">
-            {{ macros.pagination_widget(pagination, endpoint, id = user.id) }}
+            <div>{{ macros.pagination_widget(pagination, endpoint, id = user.id) }}</div>
         </div>
     </div>
 {% endblock %}
