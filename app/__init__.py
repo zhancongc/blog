@@ -9,6 +9,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_moment import Moment
 from flask_pagedown import PageDown
 
+
 app = Flask(__name__)
 app.config.from_object('config')
 

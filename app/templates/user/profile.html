@@ -33,17 +33,21 @@
                 <li class="list-group-item">个性签名：{% if user.about_me %}{{ user.about_me }}{% endif %}
             </ul>
             <ul class="list-group">
-                <li class="list-group-item">最近文章：</li>
-                {% for article in articles %}
-                    {% if article %}
-                        <li class="list-group-item">
-                            <a href="{{ url_for('art.article', id=article.id) }}">
-                                {{ article.title }}</a>
-                        </li>
+                {% if count %}
+                    <li class="list-group-item">最近文章：</li>
+                    {% for article in articles %}
+                        {% if article %}
+                            <li class="list-group-item">
+                                <a href="{{ url_for('art.article', id=article.id) }}">
+                                    {{ article.title }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if (count - 3) > 0 %}
+                        <li class="list-group-item small">
+                            <a href="{{ url_for('art.user_article', id=user.id) }}">更多文章......</a></li>
                     {% endif %}
-                {% endfor %}
-                <li class="list-group-item small">
-                    <a href="{{ url_for('art.user_article', id=user.id) }}">更多文章......</a></li>
+                {% endif %}
             </ul>
         </div>
         {% if user == current_user %}
