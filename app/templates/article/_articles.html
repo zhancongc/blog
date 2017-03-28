@@ -20,6 +20,15 @@
                 {% else %}
                     {{ article.body }}
                 {% endif %}
+                <hr>
+                <div>
+                    <span>分享到</span>&nbsp;&nbsp;
+                    <a href="http://www.jiathis.com/send/?webid=weixin&url={{ url_for('art.article', id=article.id, _external=True) }}&title={{ article.title }}">
+                        <i class="fa fa-weixin fa-lg" aria-hidden="true" style="color: #5cb85c;">
+                        </i></a>&nbsp;&nbsp;
+                    <a href="http://www.jiathis.com/send/?webid=tsina&url={{ url_for('art.article', id=article.id, _external=True) }}&title={{ article.title }}">
+                        <i class="fa fa-weibo fa-lg" aria-hidden="true" style="color: #b92c28;"></i></a>
+                </div>
             </div>
             {% if current_user.id == article.author_id %}
                 <div class="panel-footer text-right">

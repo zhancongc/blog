@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from flask import render_template, flash, redirect, url_for, request, abort, current_app, Blueprint, jsonify
+from flask import render_template, flash, redirect, url_for, request, abort, current_app, Blueprint
 from flask_login import login_user, logout_user, login_required, current_user
 from app import app, db
 from app.forms import LoginForm, RegisterForm, ForgetPasswordForm, ResetPasswordForm, EditProfileForm, NewArticleFrom, NewCommentForm
@@ -203,8 +203,8 @@ def article(id):
     page = request.args.get('page', 1, type=int)
     if page == -1:
         page = (article.comments.count() - 1)/current_app.config['FLASK_COMMENTS_PER_PAGE'] + 1
-    pagination = article.comments.order_by(Comment.timestamp.asc()).paginate(page,
-                                                                             per_page=current_app.config['FLASK_COMMENTS_PER_PAGE'], error_out=False)
+    pagination = article.comments.order_by(Comment.timestamp.asc()).paginate(
+        page, per_page=current_app.config['FLASK_COMMENTS_PER_PAGE'], error_out=False)
     comments = pagination.items
     return render_template('article.html', title=u'文章', articles=[article], form=form,
                            display=True, comments=comments, pagination=pagination)

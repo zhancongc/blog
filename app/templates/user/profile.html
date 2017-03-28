@@ -5,7 +5,7 @@
         <div class="panel-heading"><h4>{{ title }}</h4></div>
         <div class="panel-body">
             <a style="float: left; width: 100px; height: 100px;margin-top: 10px;">
-                <img style="width: 100%; height: 100%;" src="/static/me.svg"></a>
+                <img style="width: 100%; height: 100%;" src="/static/icon/me.svg"></a>
             <div style="margin-left: 120px;"><h2>{{ user.nickname }}
                 {% if user != current_user %}
                     {% if not current_user.is_anonymous==True and current_user.is_following(user) %}
@@ -28,13 +28,17 @@
                 <span>{{ user.followed.count() }}</span></a>
             </div><br><br>
             <ul class="list-group">
-                <li class="list-group-item">城市：{% if user.city %}{{ user.city }}{% endif %}</li>
-                <li class="list-group-item"><icon src="icon-mail">邮箱：{% if user.email %}{{ user.email }}{% endif %}</li>
-                <li class="list-group-item">个性签名：{% if user.about_me %}{{ user.about_me }}{% endif %}
+                <li class="list-group-item"><i class="fa fa-map-marker fa-lg" aria-hidden="true"></i>&nbsp;&nbsp;&nbsp;
+                    城市<span style="float: right">{% if user.city %}{{ user.city }}{% endif %}</span></li>
+                <li class="list-group-item"><i class="fa fa-envelope fa-lg" aria-hidden="true"></i>&nbsp;
+                    邮箱<span style="float: right">{% if user.email %}{{ user.email }}{% endif %}</span></li>
+                <li class="list-group-item"><i class="fa fa-pencil-square fa-lg" aria-hidden="true"></i>&nbsp;
+                    个性签名<span style="float: right">{% if user.about_me %}{{ user.about_me }}</span>{% endif %}
             </ul>
             <ul class="list-group">
                 {% if count %}
-                    <li class="list-group-item">最近文章：</li>
+                    <li class="list-group-item"><i class="fa fa-file-text fa-lg" aria-hidden="true"></i>&nbsp;
+                        最近文章</li>
                     {% for article in articles %}
                         {% if article %}
                             <li class="list-group-item">
