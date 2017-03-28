@@ -47,7 +47,7 @@ class ResetPasswordForm(FlaskForm):
 class EditProfileForm(FlaskForm):
     nickname = StringField(u'昵称', validators=[Length(0, 64)], render_kw={'placeholder': u'填写您的昵称'})
     city = StringField(u'城市', validators=[Length(0, 64)], render_kw={'placeholder': u'填写您所在的城市'})
-    about_me = TextAreaField(u'个性签名', render_kw={'rows': 2,'placeholder': u'一句话来展示自己'})
+    about_me = TextAreaField(u'个性签名', validators=[Length(0, 128)], render_kw={'rows': 2, 'placeholder': u'一句话来展示自己'})
     submit = SubmitField(u'提交')
 
 
