@@ -2,7 +2,6 @@
 
 {% block head %}
     {{ super() }}
-    <title>Light Blog</title>
     <meta charset="UTF-8">
     <meta name="baidu-site-verification" content="w8ueZGK8vQ" />
     <meta content="Light Blog,light blog,轻博客,博客网站,博客平台" name="keywords">
@@ -12,7 +11,11 @@
     <link rel="stylesheet" href="/static/css/font-awesome.min.css">
 {% endblock %}
 
-{% block title %}Light Blog{% endblock %}
+{% block title %}
+    {% if articles %}
+        {{ articles[0].title }}
+    {% endif %}
+{% endblock %}
 
 {% block navbar %}
     <div class="navbar navbar-inverse" role="navigation">

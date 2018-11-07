@@ -29,6 +29,11 @@ def index():
     return render_template('index.html', title=u'最新文章', articles=articles, pagination=pagination, display=False)
 
 
+@app.route("/MP_verify_rl9SmfTmn0lvAKJ2.txt")
+def weixin():
+    return render_template("MP_verify_rl9SmfTmn0lvAKJ2.txt")
+
+
 @auth.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
@@ -71,7 +76,8 @@ def register_confirm(token):
         flash(u'注册成功')
     else:
         flash(u'该链接非法或已经失效')
-    current_user.confirmed = True
+        return redirect(url_for("register"))
+    current_user.confirmed = 1
     db.session.commit()
     return redirect(url_for('user.profile', id=current_user.id))
 
