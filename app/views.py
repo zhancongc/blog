@@ -154,7 +154,7 @@ def profile(id):
     if username is None:
         abort(404)
     articles = Article.query.filter_by(author_id=username.id).order_by(Article.timestamp.desc()).limit(3)
-    return render_template('profile.html', title=u'个人信息', user=username, articles=articles, count=len(username.articles))
+    return render_template('profile.html', title=u'个人信息', user=username, arts=articles, count=len(username.articles))
 
 
 @user.route('/profile/edit', methods=['GET', 'POST'])

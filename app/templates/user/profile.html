@@ -39,11 +39,11 @@
                 {% if count %}
                     <li class="list-group-item"><i class="fa fa-file-text fa-lg" aria-hidden="true"></i>&nbsp;
                         最近文章</li>
-                    {% for article in articles %}
-                        {% if article %}
+                    {% for art in arts %}
+                        {% if art %}
                             <li class="list-group-item">
                                 <a href="{{ url_for('art.article', id=article.id) }}">
-                                    {{ article.title }}</a>
+                                    {{ art.title }}</a>
                             </li>
                         {% endif %}
                     {% endfor %}
