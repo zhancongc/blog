@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block title %}
-    {% if articles %}
+    {% if articles.all() %}
         {{ articles[0].title }}
     {% endif %}
 {% endblock %}
