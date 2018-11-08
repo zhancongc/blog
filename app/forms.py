@@ -7,7 +7,7 @@ from flask_pagedown.fields import PageDownField
 
 
 class LoginForm(FlaskForm):
-    email = StringField(u'账号', validators=[DataRequired(u'请填写您的邮箱')],
+    email = StringField(u'账号（邮箱）', validators=[DataRequired(u'请填写您的邮箱')],
                         render_kw={'placeholder': u'填写您注册Light Blog时用的邮箱'})
     password = PasswordField(u'密码', validators=[DataRequired(u'密码不能为空')],
                              render_kw={'placeholder': u'填写您Light Blog账户的密码'})

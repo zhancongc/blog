@@ -79,13 +79,15 @@ def register_confirm(token):
         return redirect(url_for("register"))
     current_user.confirmed = 1
     db.session.commit()
-    return redirect(url_for('user.profile', id=current_user.id))
+    #return redirect(url_for('user.profile', id=current_user.id))
+    return redirect(url_for('index'))
 
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user is not None and current_user.is_authenticated:
-        return redirect(url_for('user.profile', id=current_user.id))
+        #return redirect(url_for('user.profile', id=current_user.id))
+        return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
         username = User.query.filter_by(email=form.email.data).first()
