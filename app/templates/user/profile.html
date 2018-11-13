@@ -42,7 +42,7 @@
                     {% for art in arts %}
                         {% if art %}
                             <li class="list-group-item">
-                                <a href="{{ url_for('art.article', id=article.id) }}">
+                                <a href="{{ url_for('art.article', id=art.id) }}">
                                     {{ art.title }}</a>
                             </li>
                         {% endif %}

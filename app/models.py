@@ -6,7 +6,7 @@ from flask import current_app
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
-from markdown import markdown
+from markdown import Markdown
 import bleach
 
 
@@ -121,11 +121,10 @@ class Article(db.Model):
 
     @staticmethod
     def on_changed_body(target, value, old_value, initiator):
+        m = Markdown()
         allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code','em', 'i',
                         'li', 'ol', 'pre', 'strong', 'ul', 'h1', 'h2', 'h3', 'h4', 'h5', 'p', 'img', 'audio']
-        target.body_html = bleach.linkify(bleach.clean(
-            markdown(value, output_format='html',extensions=['markdown.extensions.tables','markdown.extensions.codehilite','markdown.extensions.extra']),
-            tags=allowed_tags, strip=True))
+        target.body_html = bleach.linkify(bleach.clean(m.convert(value),tags=allowed_tags, strip=True))
 
     def __repr__(self):
         return '<Post %r>' % self.body
