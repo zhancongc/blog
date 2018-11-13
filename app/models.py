@@ -121,10 +121,14 @@ class Article(db.Model):
 
     @staticmethod
     def on_changed_body(target, value, old_value, initiator):
-        m = Markdown()
+        md = Markdown(output_format="html5",extensions=["markdown.extensions.extra", "markdown.extensions.toc"])
         allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code','em', 'i',
-                        'li', 'ol', 'pre', 'strong', 'ul', 'h1', 'h2', 'h3', 'h4', 'h5', 'p', 'img', 'audio']
-        target.body_html = bleach.linkify(bleach.clean(m.convert(value),tags=allowed_tags, strip=True))
+                        'li', 'ol', 'pre', 'strong', 'ul', 'h1', 'h2', 'h3', 'h4', 'h5',
+                        'table', 'tr', 'th', 'td', 'p', 'img', 'audio']
+        attrs = {'*': ['class'], 'a': ['href'], 'img': ["src", "alt"]}
+        target.body_html = bleach.linkify(bleach.clean(
+            md.convert(value), tags=allowed_tags, strip=True, attributes=attrs))
+        print(target.body_html)
 
     def __repr__(self):
         return '<Post %r>' % self.body
