@@ -128,7 +128,6 @@ class Article(db.Model):
         attrs = {'*': ['class'], 'a': ['href'], 'img': ["src", "alt"]}
         target.body_html = bleach.linkify(bleach.clean(
             md.convert(value), tags=allowed_tags, strip=True, attributes=attrs))
-        print(target.body_html)
 
     def __repr__(self):
         return '<Post %r>' % self.body
