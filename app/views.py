@@ -77,7 +77,7 @@ def register_confirm(token):
     else:
         flash(u'该链接非法或已经失效')
         return redirect(url_for("register"))
-    current_user.confirmed = 1
+    current_user.confirmed = True
     db.session.commit()
     #return redirect(url_for('user.profile', id=current_user.id))
     return redirect(url_for('index'))
