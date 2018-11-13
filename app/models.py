@@ -122,7 +122,7 @@ class Article(db.Model):
     @staticmethod
     def on_changed_body(target, value, old_value, initiator):
         allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code','em', 'i',
-                        'li', 'ol', 'pre', 'strong', 'ul', 'h1', 'h2', 'h3', 'p', 'img']
+                        'li', 'ol', 'pre', 'strong', 'ul', 'h1', 'h2', 'h3', 'h4', 'h5', 'p', 'img', 'audio']
         target.body_html = bleach.linkify(bleach.clean(
             markdown(value, output_format='html',extensions=['markdown.extensions.tables','markdown.extensions.codehilite','markdown.extensions.extra']),
             tags=allowed_tags, strip=True))
